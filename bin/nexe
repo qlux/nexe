@@ -13,34 +13,34 @@ options('i', {
   default: process.cwd()
 }).
 options('o', {
-  demand: true,
+  // demand: true,
   alias: 'output',
   desc: 'The output binary',
-  default: "out.nex"
+  // default: "out.nex"
 }).
 options('r', {
   alias: 'runtime',
-  default: 'latest',
+  // default: 'latest',
   description: 'The node.js runtime to use'
 }).
 options('t', {
   alias: 'temp',
-  default: './tmp/nexe',
+  // default: './tmp/nexe',
   description: 'The path to store node.js sources'
 }).
 options('f', {
   alias: 'flags',
   description: 'Don\'t parse node and v8 flags, pass through app flags',
-  default: false
+  // default: false
 }).
 options('d', {
   alias: 'debug',
-  default: false,
+  // default: false,
   description: 'generate and use source maps, large file size'
 }).
 options('j', {
   alias: 'jsFlags',
-  default: false,
+  // default: false,
   description: 'v8 flags for runtime'
 }).
 options('v', {
@@ -50,15 +50,26 @@ options('v', {
 options('p', {
   alias: 'python',
   description: 'Set path of python to use.',
-  default: 'python'
+  // default: 'python'
 }).
 options('F', {
   alias: 'framework',
   description: 'Set the framework to use',
-  default: 'nodejs'
+  // default: 'nodejs'
 });
 
 var argv = cli.argv;
+var defaultOpts = {
+  output : "out.nex",
+  runtime : "latest",
+  temp : './tmp/nexe',
+  flags : false,
+  debug : false,
+  jsFlags :  false,
+  python    : 'python',
+  framework : 'nodejs'
+};
+  
 if (argv.h || argv.help) {
   cli.showHelp();
   process.exit();
@@ -81,7 +92,7 @@ function toAbsolute(pt) {
 }
 
 if (fs.lstatSync(argv.i).isDirectory()) {
-  opts = nexe.package(path.join(argv.i, "package.json"), argv);
+  var opts = nexe.package(path.join(argv.i, "package.json"), argv, defaultOpts);
   nexe.compile(opts, function(error) {
     if (error) {
       return console.log(error.message);
@@ -91,6 +102,8 @@ if (fs.lstatSync(argv.i).isDirectory()) {
   /**
    * Call the core
    **/
+   //Inject default opts
+   
   nexe.compile({
       input: require.resolve(toAbsolute(argv.i)),
       output: toAbsolute(argv.o),
